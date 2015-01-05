@@ -5,7 +5,9 @@ main :: IO ()
 main = do
     putStrLn "Type one list item per line and then press enter twice:"
     items <- readItems
-    simpleListPrompt def items
+    choice <- simpleListPrompt def items
+    putStrLn ""
+    putStrLn $ "You choose: " ++ show choice
 
 readItems :: IO [String]
 readItems = loop []

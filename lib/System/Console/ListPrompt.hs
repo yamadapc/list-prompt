@@ -17,54 +17,58 @@ import Data.Maybe (maybe)
 import System.Console.ANSI
 import System.Console.Terminal.Size (size, Window(..))
 
-data ListPromptOptions = ListPromptOptions { backgroundColor :: Color
-                                           , foregroundColor :: Color
-                                           }
+import System.Console.ListPrompt.Internal
+import System.Console.ListPrompt.Types
 
-instance Default ListPromptOptions where
-    def = ListPromptOptions { backgroundColor = Blue
-                            , foregroundColor = White
-                            }
+import System.Exit
 
-data ListPromptDimensions =
-    ListPromptDimensions { targetCoordinate :: (Int, Int)
-                         , listPromptSize :: (Int, Int)
-                         }
-
-instance Default ListPromptDimensions where
-    def = ListPromptDimensions { targetCoordinate = (0, 0)
-                               , listPromptSize = (80, 80)
-                               }
-
-simpleListPrompt :: ListPromptOptions -> [String] -> IO ()
+simpleListPrompt :: ListPromptOptions -> Choices -> IO String
 simpleListPrompt options choices = do
-    clearScreen
-    renderListOptions options choices
+    dimensions <- getDimensionsIO numChoices
+    waitForSelection options dimensions choices 0
+  where
+    numChoices = length choices
 
-renderListOptions :: ListPromptOptions -> [String] -> IO ()
-renderListOptions options choices = do
-    dimensions <- getDimensions
+    waitForSelection options dimensions choices currentIdx = do
+        clearScreen
+        let st = undefined
+        renderListOptions options dimensions choices
+        i <- getChar
+        case i of
+           '\n' -> return $ choices !! currentIdx
+           'j' -> waitForSelection
+                      options
+                      dimensions
+                      choices
+                      ((currentIdx + 1) `rem` numChoices)
+           'k' -> waitForSelection
+                      options
+                      dimensions
+                      choices
+                      ((currentIdx - 1) `rem` numChoices)
+           _ -> waitForSelection options dimensions choices currentIdx
+
+renderListOptions :: ListPromptOptions -> ListPromptDimensions -> Choices -> IO ()
+renderListOptions options dimensions choices = do
     clearScreen
-    drawLine options dimensions
+    putStrLn $ "options: " ++ show options
+    putStrLn $ "dimensions: " ++ show dimensions
+    exitSuccess
+    forM_ [0..(fst $ listPromptSize dimensions)] $ \i -> do
+        drawLine options dimensions i
+        cursorDown 1
+
     -- drawBox
     -- drawOptions
-  where
-    drawBox = undefined
-        -- forM_ [1..h] $ do
-            -- putStrLn ""
 
-    drawOptions = undefined
-
-getDimensions :: IO ListPromptDimensions
-getDimensions = maybe def windowToDimensions <$> size
-  where
-    windowToDimensions (Window h w) = ListPromptDimensions (0, 0) (h, w)
-
-drawLine :: ListPromptOptions -> ListPromptDimensions -> IO ()
-drawLine ListPromptOptions{..} ListPromptDimensions{..} = do
+drawLine :: ListPromptOptions -> ListPromptDimensions -> Int -> IO ()
+drawLine ListPromptOptions{..} ListPromptDimensions{..} n = do
     setSGR [ SetColor Foreground Vivid foregroundColor
            , SetColor Background Vivid backgroundColor
            ]
-    uncurry setCursorPosition targetCoordinate
-    let (h, w) = listPromptSize
+
+    let (y1, x1) = targetCoordinate
+    setCursorPosition (y1 + n) x1
+
+    let (_, w) = listPromptSize
     putStrLn (replicate w ' ')
