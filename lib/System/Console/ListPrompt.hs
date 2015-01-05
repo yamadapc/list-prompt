@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
 module System.Console.ListPrompt
     (
       Color
@@ -8,8 +10,10 @@ module System.Console.ListPrompt
     )
   where
 
+import Control.Applicative ((<$>))
 import Control.Monad (forM_)
 import Data.Default (Default(..), def)
+import Data.Maybe (maybe)
 import System.Console.ANSI
 import System.Console.Terminal.Size (size, Window(..))
 
@@ -17,32 +21,33 @@ data ListPromptOptions = ListPromptOptions { backgroundColor :: Color
                                            , foregroundColor :: Color
                                            }
 
-data ListPromptDimensions =
-    ListPromptDimensions { targetCoordinate :: (Int, Int)
-                         , listPromptSize :: (Int, Int)
-                         }
-
 instance Default ListPromptOptions where
     def = ListPromptOptions { backgroundColor = Blue
                             , foregroundColor = White
                             }
 
-simpleListPrompt :: ListPromptOptions -> [String] -> IO a
+data ListPromptDimensions =
+    ListPromptDimensions { targetCoordinate :: (Int, Int)
+                         , listPromptSize :: (Int, Int)
+                         }
+
+instance Default ListPromptDimensions where
+    def = ListPromptDimensions { targetCoordinate = (0, 0)
+                               , listPromptSize = (80, 80)
+                               }
+
+simpleListPrompt :: ListPromptOptions -> [String] -> IO ()
 simpleListPrompt options choices = do
     clearScreen
     renderListOptions options choices
-    return undefined
 
 renderListOptions :: ListPromptOptions -> [String] -> IO ()
 renderListOptions options choices = do
-    mwindow <- size
-    case mwindow of
-       Just (Window h w) -> do
-           clearScreen
-           drawBox
-           drawOptions
-           return ()
-       Nothing -> return ()
+    dimensions <- getDimensions
+    clearScreen
+    drawLine options dimensions
+    -- drawBox
+    -- drawOptions
   where
     drawBox = undefined
         -- forM_ [1..h] $ do
@@ -50,5 +55,16 @@ renderListOptions options choices = do
 
     drawOptions = undefined
 
-drawLine :: ListPromptOptions -> ListPromptDimensions -> Color -> IO ()
-drawLine _ _ = undefined -- do
+getDimensions :: IO ListPromptDimensions
+getDimensions = maybe def windowToDimensions <$> size
+  where
+    windowToDimensions (Window h w) = ListPromptDimensions (0, 0) (h, w)
+
+drawLine :: ListPromptOptions -> ListPromptDimensions -> IO ()
+drawLine ListPromptOptions{..} ListPromptDimensions{..} = do
+    setSGR [ SetColor Foreground Vivid foregroundColor
+           , SetColor Background Vivid backgroundColor
+           ]
+    uncurry setCursorPosition targetCoordinate
+    let (h, w) = listPromptSize
+    putStrLn (replicate w ' ')
