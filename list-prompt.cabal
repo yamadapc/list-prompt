@@ -23,7 +23,6 @@ library
   default-language:    Haskell2010
 
 executable simple-demo
-  exposed-modules:     System.Console.ListPrompt
   build-depends:       ansi-terminal
                      , base >=4.7 && <4.8
                      , data-default
@@ -31,4 +30,18 @@ executable simple-demo
   hs-source-dirs:      bin
                      , lib
   main-is:             SimpleDemo.hs
+  default-language:    Haskell2010
+
+test-suite hspec
+  type:                exitcode-stdio-1.0
+  build-depends:       ansi-terminal
+                     , base >=4.7 && <4.8
+                     , data-default
+                     , terminal-size
+
+                     , hspec
+  hs-source-dirs:      bin
+                     , lib
+                     , test
+  main-is:             Spec.hs
   default-language:    Haskell2010
