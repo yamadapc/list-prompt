@@ -1,0 +1,34 @@
+name:                list-prompt
+version:             0.1.0.0
+synopsis:            A simple list prompt UI for the terminal.
+-- description:         
+homepage:            https://gitlab.com/yamadapc/list-prompt.git
+license:             GPL-2
+license-file:        LICENSE
+author:              Pedro Tacla Yamada
+maintainer:          tacla.yamada@gmail.com
+copyright:           (c) 2014 Pedro Tacla Yamada
+category:            System
+build-type:          Simple
+extra-source-files:  README.md, LICENSE
+cabal-version:       >=1.10
+
+library
+  exposed-modules:     System.Console.ListPrompt
+  build-depends:       ansi-terminal
+                     , base >=4.7 && <4.8
+                     , data-default
+                     , terminal-size
+  hs-source-dirs:      lib
+  default-language:    Haskell2010
+
+executable simple-demo
+  exposed-modules:     System.Console.ListPrompt
+  build-depends:       ansi-terminal
+                     , base >=4.7 && <4.8
+                     , data-default
+                     , terminal-size
+  hs-source-dirs:      bin
+                     , lib
+  main-is:             SimpleDemo.hs
+  default-language:    Haskell2010
