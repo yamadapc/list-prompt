@@ -1,3 +1,4 @@
+import Control.Applicative ((<$>))
 import Control.Monad
 import System.Console.ListPrompt (def, simpleListPrompt)
 
@@ -10,7 +11,7 @@ main = do
     putStrLn $ "You choose: " ++ show choice
 
 readItems :: IO [String]
-readItems = loop []
+readItems = reverse <$> loop []
   where
     loop acc = do
         ln <- getLine
