@@ -2,16 +2,20 @@ module System.Console.ListPrompt.Types
   where
 
 import Data.Default (Default(..))
-import System.Console.ANSI (Color(..))
+import System.Console.ANSI
 
-data ListPromptOptions = ListPromptOptions { backgroundColor :: Color
-                                           , foregroundColor :: Color
+data ListPromptOptions = ListPromptOptions { selectedItemSGR :: [SGR]
+                                           , normalItemSGR :: [SGR]
                                            }
   deriving(Show, Ord, Eq)
 
 instance Default ListPromptOptions where
-    def = ListPromptOptions { backgroundColor = Blue
-                            , foregroundColor = White
+    def = ListPromptOptions { normalItemSGR = [ SetColor Foreground Vivid White
+                                              , SetColor Background Vivid Blue
+                                              ]
+                            , selectedItemSGR = [ SetColor Foreground Vivid White
+                                                , SetColor Background Vivid Red
+                                                ]
                             }
 
 data ListPromptDimensions =
