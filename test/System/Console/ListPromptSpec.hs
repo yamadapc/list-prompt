@@ -13,5 +13,5 @@ spec = -- do
         it "works when a `Window `is provided, centering the prompt" $ do
             let dim = getDimensions 10 (Just (Window 80 80))
 
-            listPromptSize dim `shouldBe` (13, 77)
-            targetCoordinate dim `shouldBe` (38, 3)
+            listPromptSize dim `shouldBe` (13, 74)
+            targetCoordinate dim `shouldBe` (32, 3)
