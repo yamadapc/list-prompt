@@ -2,7 +2,7 @@ name:                list-prompt
 version:             0.1.0.0
 synopsis:            A simple list prompt UI for the terminal.
 -- description:         
-homepage:            https://gitlab.com/yamadapc/list-prompt.git
+homepage:            https://github.com/yamadapc/list-prompt.git
 license:             GPL-2
 license-file:        LICENSE
 author:              Pedro Tacla Yamada
