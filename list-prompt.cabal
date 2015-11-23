@@ -20,6 +20,8 @@ source-repository head
 
 library
   exposed-modules:     System.Console.ListPrompt
+                     , System.Console.ListPrompt.Internal
+                     , System.Console.ListPrompt.Types
   build-depends:       ansi-terminal
                      , base >=4.5 && <5
                      , data-default
