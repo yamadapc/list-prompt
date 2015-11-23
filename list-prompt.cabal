@@ -16,7 +16,7 @@ cabal-version:       >=1.10
 library
   exposed-modules:     System.Console.ListPrompt
   build-depends:       ansi-terminal
-                     , base >=4.7 && <4.8
+                     , base >=4.7 && <5
                      , data-default
                      , terminal-size
   hs-source-dirs:      lib
@@ -24,7 +24,7 @@ library
 
 executable simple-demo
   build-depends:       ansi-terminal
-                     , base >=4.7 && <4.8
+                     , base >=4.7 && <5
                      , data-default
                      , terminal-size
   hs-source-dirs:      bin
@@ -35,7 +35,7 @@ executable simple-demo
 test-suite hspec
   type:                exitcode-stdio-1.0
   build-depends:       ansi-terminal
-                     , base >=4.7 && <4.8
+                     , base >=4.7 && <5
                      , data-default
                      , terminal-size
 

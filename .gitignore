@@ -1,4 +1,4 @@
-# Created by https://www.gitignore.io
+# Created by https://www.gitignore.io/api/haskell
 
 ### Haskell ###
 dist
@@ -9,13 +9,12 @@ cabal-dev
 *.chs.h
 *.dyn_o
 *.dyn_hi
-.virtualenv
 .hpc
 .hsenv
 .cabal-sandbox/
 cabal.sandbox.config
-cabal.config
 *.prof
 *.aux
 *.hp
+.stack-work/
 

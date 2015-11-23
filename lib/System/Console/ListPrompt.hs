@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE LambdaCase      #-}
 {-# LANGUAGE RecordWildCards #-}
 module System.Console.ListPrompt
     (
@@ -10,20 +10,22 @@ module System.Console.ListPrompt
     )
   where
 
-import Control.Monad (forM_)
-import Data.Default (Default(..), def)
-import System.Console.ANSI
-import System.IO (BufferMode(..), stdin)
+import           Control.Monad                      (forM_)
+import           Data.Default                       (Default (..), def)
+import           System.Console.ANSI
+import           System.IO                          (BufferMode (..), stdin)
 
 -- Internal imports
-import System.Console.ListPrompt.Internal
-import System.Console.ListPrompt.Types
+import           System.Console.ListPrompt.Internal
+import           System.Console.ListPrompt.Types
 
 simpleListPrompt :: ListPromptOptions -> Choices -> IO String
 simpleListPrompt options choices = setup $ do
     dimensions <- getDimensionsIO numChoices
     selection <- waitForSelection dimensions 0
     setSGR []
+    clearScreen
+    setCursorPosition 0 0
     return selection
   where
     setup = withNoBuffering stdin NoBuffering . withNoCursor . withNoEcho
