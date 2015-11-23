@@ -1,5 +1,7 @@
 list-prompt
 ===========
+[![Build Status](https://travis-ci.org/yamadapc/list-prompt.svg)](https://travis-ci.org/yamadapc/list-prompt)
+- - -
 A simple list prompt UI for the terminal for Haskell.
 
 ![screenshot](/screenshot.png)
