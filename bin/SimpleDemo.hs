@@ -1,4 +1,7 @@
+{-# LANGUAGE CPP #-}
+#if __GLASGOW_HASKELL__ > 710
 import           Control.Applicative       ((<$>))
+#endif
 import           System.Console.ListPrompt (def, simpleListPrompt)
 
 main :: IO ()
