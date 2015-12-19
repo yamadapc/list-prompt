@@ -12,7 +12,7 @@ category:            System
 build-type:          Simple
 extra-source-files:  README.md, LICENSE
 cabal-version:       >=1.10
-tested-with: GHC >= 7.4 && <= 7.10
+tested-with: GHC >= 7.6 && <= 7.10
 
 flag examples
   description: Build the examples
