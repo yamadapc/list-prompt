@@ -46,8 +46,8 @@ executable simple-demo
                      , base >=4.5 && <5
                      , data-default
                      , terminal-size
-                     , list-prompt
   hs-source-dirs:      bin
+                     , lib
   main-is:             SimpleDemo.hs
   default-language:    Haskell2010
 
