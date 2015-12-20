@@ -10,8 +10,12 @@ module System.Console.ListPrompt
     )
   where
 
+import           Control.Concurrent.STM
 import           Control.Monad                      (forM_)
 import           Data.Default                       (Default (..), def)
+import           Graphics.Vty                       (Event (..), Key (..),
+                                                     Modifier (..))
+import qualified Graphics.Vty                       as Vty
 import           System.Console.ANSI
 import           System.IO                          (BufferMode (..), stdin)
 
@@ -19,35 +23,40 @@ import           System.IO                          (BufferMode (..), stdin)
 import           System.Console.ListPrompt.Internal
 import           System.Console.ListPrompt.Types
 
-simpleListPrompt :: ListPromptOptions -> Choices -> IO String
+simpleListPrompt :: ListPromptOptions -> Choices -> IO (Maybe String)
 simpleListPrompt options choices = setup $ do
-    dimensions <- getDimensionsIO numChoices
-    selection <- waitForSelection dimensions 0
+    inp <- Vty.inputForConfig =<< Vty.standardIOConfig
+    selection <- waitForSelection (Vty._eventChannel inp) 0
     setSGR []
     clearScreen
     setCursorPosition 0 0
+    Vty.shutdownInput inp
     return selection
   where
     setup = withNoBuffering stdin NoBuffering . withNoCursor . withNoEcho
     numChoices = length choices
 
-    waitForSelection dimensions currentIdx = do
+    waitForSelection ichan currentIdx = do
         clearScreen
-        renderListOptions options dimensions choices currentIdx
-        i <- getChar
-        case i of
-           '\n' -> return $ choices !! currentIdx
-           'j' -> waitForSelection
-                      dimensions
-                      ((currentIdx + 1) `rem` numChoices)
-           'k' -> waitForSelection
-                      dimensions
-                      currentIdx'
-             where
-               currentIdx' = if currentIdx == 0
-                                 then length choices - 1
-                                 else currentIdx - 1
-           _ -> waitForSelection dimensions currentIdx
+        renderListOptions options def choices currentIdx
+        e <- atomically $ readTChan ichan
+        case e of
+            EvKey KEnter _ -> return $ Just (choices !! currentIdx)
+            EvKey (KChar 'n') [MCtrl] -> onDown
+            EvKey (KChar 'j') _ -> onDown
+            EvKey KDown _ -> onDown
+            EvKey (KChar 'p') [MCtrl] -> onUp
+            EvKey (KChar 'k') _ -> onUp
+            EvKey KUp _ -> onUp
+            EvKey (KChar 'q') _ -> return Nothing
+            EvKey KEsc _ -> return Nothing
+            _ -> waitForSelection ichan currentIdx
+      where
+        onDown = waitForSelection ichan ((currentIdx + 1) `rem` numChoices)
+        onUp = let currentIdx' = if currentIdx == 0
+                                   then length choices - 1
+                                   else currentIdx - 1
+                 in waitForSelection ichan currentIdx'
 
 renderListOptions :: ListPromptOptions
                   -> ListPromptDimensions

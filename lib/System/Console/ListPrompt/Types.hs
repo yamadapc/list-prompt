@@ -1,11 +1,11 @@
 module System.Console.ListPrompt.Types
   where
 
-import Data.Default (Default(..))
-import System.Console.ANSI
+import           Data.Default        (Default (..))
+import           System.Console.ANSI
 
 data ListPromptOptions = ListPromptOptions { selectedItemSGR :: [SGR]
-                                           , normalItemSGR :: [SGR]
+                                           , normalItemSGR   :: [SGR]
                                            }
   deriving(Show, Ord, Eq)
 
@@ -20,12 +20,12 @@ instance Default ListPromptOptions where
 
 data ListPromptDimensions =
     ListPromptDimensions { targetCoordinate :: (Int, Int)
-                         , listPromptSize :: (Int, Int)
+                         , listPromptSize   :: (Int, Int)
                          }
   deriving(Show, Ord, Eq)
 
 instance Default ListPromptDimensions where
-    def = ListPromptDimensions { targetCoordinate = (0, 0)
+    def = ListPromptDimensions { targetCoordinate = (1, 2)
                                , listPromptSize = (80, 80)
                                }
 
