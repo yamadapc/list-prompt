@@ -6,17 +6,23 @@ import           System.Console.ANSI
 
 data ListPromptOptions = ListPromptOptions { selectedItemSGR :: [SGR]
                                            , normalItemSGR   :: [SGR]
+                                           , mputChoice      :: Maybe (PutChoiceOptions -> IO ())
                                            }
-  deriving(Show, Ord, Eq)
 
 instance Default ListPromptOptions where
     def = ListPromptOptions { normalItemSGR = [ SetColor Foreground Vivid White
                                               , SetColor Background Vivid Blue
                                               ]
                             , selectedItemSGR = [ SetColor Foreground Vivid White
-                                                , SetColor Background Vivid Red
+                                                , SetColor Background Vivid Black
                                                 ]
+                            , mputChoice = Nothing
                             }
+
+data PutChoiceOptions = PutChoiceOptions { putChoiceStr     :: String
+                                         , putChoiceSuffix  :: String
+                                         , putChoiceItemSgr :: [SGR]
+                                         }
 
 data ListPromptDimensions =
     ListPromptDimensions { targetCoordinate :: (Int, Int)

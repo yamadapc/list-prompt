@@ -5,13 +5,14 @@ module System.Console.ListPrompt
       Color
     , ListPromptOptions(..)
     , simpleListPrompt
+    , PutChoiceOptions(..)
     -- Reexports
     , Default(..)
     )
   where
 
 import           Control.Concurrent.STM
-import           Control.Monad                      (forM_)
+import           Control.Monad                      (forM_, when)
 import           Data.Default                       (Default (..), def)
 import           Graphics.Vty                       (Event (..), Key (..),
                                                      Modifier (..))
@@ -77,9 +78,8 @@ renderListOptions options dimensions choices currentIdx = do
 -- |
 -- Draws an empty list line on a said position
 drawLine :: ListPromptOptions -> ListPromptDimensions -> Int -> IO ()
-drawLine options dimensions@ListPromptDimensions{..} n = do
-    let (_, w) = listPromptSize
-    drawTextLine options dimensions n (replicate w ' ') False
+drawLine options dimensions@ListPromptDimensions{..} n =
+    drawTextLine options dimensions n "" False
 
 -- |
 -- Draws a string on a list line
@@ -88,10 +88,24 @@ drawTextLine :: ListPromptOptions -> ListPromptDimensions
              -> String -- ^ The text to print
              -> Bool   -- ^ Is the currently selected item
              -> IO ()
-drawTextLine ListPromptOptions{..} ListPromptDimensions{..} n str selected = do
-    setSGR $ if selected then selectedItemSGR else normalItemSGR
+drawTextLine opts@ListPromptOptions{..} ListPromptDimensions{..} n str selected = do
     let (y1, x1) = targetCoordinate
     setCursorPosition (y1 + n) x1
 
     let (_, w) = listPromptSize
-    putStrLn $ " " ++ str ++ replicate (w - length str) ' '
+    setSGR normalItemSGR
+    putStr "  "
+    case mputChoice of
+        Just putChoice ->
+            putChoice PutChoiceOptions { putChoiceStr = str
+                                       , putChoiceSuffix = replicate (w - length str - 2) ' '
+                                       , putChoiceItemSgr = if selected
+                                                            then selectedItemSGR
+                                                            else normalItemSGR
+                                       }
+        Nothing -> do
+            when selected (setSGR selectedItemSGR)
+            putStr $ str ++ replicate (w - length str - 2) ' '
+            setSGR normalItemSGR
+    putStrLn "  "
+    setSGR [Reset]
