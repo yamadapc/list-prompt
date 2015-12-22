@@ -72,6 +72,12 @@ renderListOptions options dimensions choices currentIdx = do
         drawTextLine options dimensions i t (i-2 == currentIdx)
 
     forM_ [len + 2..len + 3] $ drawLine options dimensions
+
+    case mlistFooter options of
+        Just footer -> do
+            drawTextLine options dimensions (len + 4) footer False
+            drawLine options dimensions (len + 5)
+        Nothing -> return ()
   where
     len = length choices
 

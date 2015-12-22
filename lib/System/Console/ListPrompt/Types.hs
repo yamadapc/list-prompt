@@ -7,6 +7,7 @@ import           System.Console.ANSI
 data ListPromptOptions = ListPromptOptions { selectedItemSGR :: [SGR]
                                            , normalItemSGR   :: [SGR]
                                            , mputChoice      :: Maybe (PutChoiceOptions -> IO ())
+                                           , mlistFooter     :: Maybe String
                                            }
 
 instance Default ListPromptOptions where
@@ -17,6 +18,7 @@ instance Default ListPromptOptions where
                                                 , SetColor Background Vivid Black
                                                 ]
                             , mputChoice = Nothing
+                            , mlistFooter = Nothing
                             }
 
 data PutChoiceOptions = PutChoiceOptions { putChoiceStr     :: String
